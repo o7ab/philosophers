@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:25:53 by oabushar          #+#    #+#             */
-/*   Updated: 2022/08/23 15:56:30 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/08/25 03:52:59 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ void	*ft_test()
 void	ft_init_mutex(t_data *info)
 {
 	unsigned int i;
-
 	i = 0;
 	while (i < info->n_philo)
 	{
@@ -89,22 +88,45 @@ void	ft_init_mutex(t_data *info)
 	}
 }
 
+// void	ft_even(t_data *info)
+// {
+// 	while (1) 
+// 	{
+// 		if ()
+// 		printf("Philosopher");
+		
+// 	}
+// }
+
+void	ft_print(char *str, t_data *info)
+{
+	if ()
+}
+
 void	*ft_thread(void *info)
 {
-	int i = 0;
-	static int m;
-	int test = 0;
+	int time = 0;
+	int j = 0;
+	
 	t_data *data = (t_data *)info;
-	// (void) data;
-	if ((test = pthread_mutex_lock(&data->mutex[m])))
+	while (1)
 	{
-		printf("%d     Error\n", test);
-		return (NULL);
+		if (data->philo[j].l_r = 1)
+		{
+			printf("[%d] Philosopher %d is eating\n", data->te * time, data->philo[j].l_r);
+			usleep(data->te);
+			data->philo[j].l_r = 0;
+		}
 	}
-	printf("this is currenly i: %d\n", i);
-	sleep(2);
-	i++;
-	pthread_mutex_unlock(&data->mutex[m++]);
+	// if (data->n_philo % 2 == 0)
+	// {
+	// 	ft_even(data);
+	// }
+	// else if (data->n_philo % 2 == 1)
+	// {
+	// 	(void) data;
+	// }
+
 	return (NULL);
 }
 
@@ -115,9 +137,12 @@ void	ft_init_philo(t_data *info)
 	i = 0;
 	while (i < info->n_philo)
 	{
-		pthread_create(&info->philo[i], NULL, &ft_thread, (void *)&info);
-		pthread_join(info->philo[i++], NULL);
+		info->philo->philo_id = i + 1;
+		pthread_create(&info->phils[i++], NULL, &ft_thread, (void *)info);
 	}
+	i = 0;
+	while (i < info->n_philo)
+		pthread_join(info->phils[i++], NULL);
 }
 int main(int argc, char **argv)
 {

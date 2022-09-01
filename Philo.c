@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:25:53 by oabushar          #+#    #+#             */
-/*   Updated: 2022/08/25 03:52:59 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/01 05:28:18 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,69 +68,100 @@ int check_arg(char **argv, t_data *data)
 	return (1);
 }
 
-void	*ft_test()
-{
-	printf("test\n");
-	int i = 0;
-	i++;
-	printf("Test\n");
-	return (NULL);
-}
-
 void	ft_init_mutex(t_data *info)
 {
 	unsigned int i;
+
 	i = 0;
 	while (i < info->n_philo)
 	{
-		if (pthread_mutex_init(&info->mutex[i++], NULL))
+		if (pthread_mutex_init(&info->mutex[i], NULL))
 			return ;
 	}
 }
 
-// void	ft_even(t_data *info)
-// {
-// 	while (1) 
-// 	{
-// 		if ()
-// 		printf("Philosopher");
-		
-// 	}
-// }
-
-void	ft_print(char *str, t_data *info)
+int	ft_strcmp(char *s1, char *s2)
 {
-	if ()
+	int i;
+
+	i = 0;
+	while ((s1[i] || s2[i]) && s1[i] == s2[i])
+	{
+		i++;
+	}
+	return (s1[i] - s2[i]);
+}
+
+void	ft_print(char *str, t_data *data)
+{
+	if (!(ft_strcmp(str, "fork")))
+	{
+		printf("[%d] Philosopher %d has taken a fork\n", data->time, data->philo[data->philo->philo_id].philo_id);
+	}
+	if (!(ft_strcmp(str, "eat")))
+	{
+		printf("[%d] Philosopher %d is eating\n", data->time, data->philo[data->philo->philo_id].philo_id);
+		usleep (data->te);
+	}
+	if (!ft_strcmp(str, "sleep"))
+	{
+		printf("[%d] Philosopher %d is sleeping\n", data->time, data->philo[data->philo->philo_id].philo_id);
+		usleep(data->ts);
+	}
+	if (!ft_strcmp(str, "thinking"))
+	{
+		printf("[%d] Philosopher %d is sleeping\n", data->time, data->philo[data->philo->philo_id].philo_id);
+	}
+}
+
+int	check_forks(t_philo *ph)
+{
+	pthread_mutex_lock(&ph->info.mutex[ph->left_fork]);
+	if (ph->info.forks[ph->left_fork] != ph->philo_id)
+	{
+		if (ph->info.forks[ph->philo_id] && ph->philo_id != ph->info.n_philo)
+		{
+			ph->info.forks[ph->philo_id] = 0;
+			ph->info.forks[ph->philo_id - 1] = 0;
+			ft_print("fork", &ph->info);
+		}
+		else if (ph->info.forks[0] && ph->philo_id == ph->info.n_philo)
+		{
+			ph->info.forks[0] = 0;
+			ph->info.forks[ph->philo_id - 1] = 0;
+			ft_print("fork", &ph->info);
+		}
+		else
+			return(0);
+	}
+	pthread_mutex_unlock(&ph->info.mutex[ph->left_fork]);
+	return (1);
+}
+
+void	eating(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->info.mutex[philo->philo_id]);
+	ft_print("eat", philo->info);
+	pthread_mutex_unlock(&philo->info.mutex[philo->philo_id]);
 }
 
 void	*ft_thread(void *info)
 {
-	int time = 0;
+	// int time = 0;
 	int j = 0;
 	
 	t_data *data = (t_data *)info;
-	while (1)
+	while (j < data->n_philo)
 	{
-		if (data->philo[j].l_r = 1)
-		{
-			printf("[%d] Philosopher %d is eating\n", data->te * time, data->philo[j].l_r);
-			usleep(data->te);
-			data->philo[j].l_r = 0;
-		}
+		if (check_forks(&data->philo[j]) == 0)
+			j++;
+		else
+			eating(&data->philo[j]);
 	}
-	// if (data->n_philo % 2 == 0)
-	// {
-	// 	ft_even(data);
-	// }
-	// else if (data->n_philo % 2 == 1)
-	// {
-	// 	(void) data;
-	// }
-
 	return (NULL);
 }
 
-void	ft_init_philo(t_data *info)
+void	 ft_init_philo(t_data *info)
 {
 	unsigned int	i;
 
@@ -144,6 +175,26 @@ void	ft_init_philo(t_data *info)
 	while (i < info->n_philo)
 		pthread_join(info->phils[i++], NULL);
 }
+
+void	set_fork(t_data *info)
+{
+	unsigned int i = 0;
+	
+	while (i < info->n_philo)
+		info->forks[i++] = -1;
+	i = 0;
+	while (i < info->n_philo)
+	{
+		if (info->philo[i].philo_id == info->n_philo)
+			info->philo[i].right_fork = info->philo[0].philo_id;
+		else
+		{
+			info->philo[i].left_fork = info->philo[i].philo_id;
+			info->philo[i].right_fork = info->philo[i].philo_id + 1;
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
 	// pthread_t		thread;
@@ -159,6 +210,9 @@ int main(int argc, char **argv)
 		printf("Invalid arguements\n");
 		return (0);
 	}
+	info.time = 0;
+	info.forks = malloc(sizeof(int) * info.n_philo);
+	set_fork(&info);
 	ft_init_mutex(&info);
 	ft_init_philo(&info);
 	return (0);

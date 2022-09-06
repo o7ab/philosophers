@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:26:25 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/01 05:04:49 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/06 02:47:46 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,21 +27,27 @@ typedef struct s_philo{
 	int last_meal;
 	int	left_fork;
 	int	right_fork;
-	struct s_data info;
-
+	unsigned int times_ate;
+	struct s_data *info;
 }	t_philo;
 
 typedef struct s_data{
-	t_philo			philo[200];
+	struct s_philo	philo[200];
     unsigned int	n_philo;
     unsigned int	td;
     unsigned int	te;
     unsigned int	ts;
     unsigned int	n_eat;
-	int				time;
-	int				*forks;
+	int	long long	time;
+	unsigned int	all_eat;
+	unsigned int	dead;
+	int				forks[250];
 	pthread_t		phils[200];
-	pthread_mutex_t mutex[200];
+	pthread_mutex_t mutex_forks[200];
+	pthread_mutex_t mutex_print;
+	pthread_mutex_t mutex_all_eat;
+	pthread_mutex_t mutex_dead;
+	
 }   t_data;
 
 #endif

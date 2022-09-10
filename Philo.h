@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:26:25 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/10 10:27:27 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/10 13:09:00 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,4 +57,11 @@ typedef struct s_data{
 	
 }   t_data;
 
+void			set_fork(t_data *info);
+int				check_forks_even(t_philo *ph);
+void			eating(t_philo *philo);
+int				check_arg(char **argv, t_data *data);
+int				ft_init_mutex(t_data *info);
+void			my_sleep(t_data *info, int ms);
+int long long	get_time();
 #endif

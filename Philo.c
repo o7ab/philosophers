@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:25:53 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/06 20:19:04 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/10 11:22:39 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ int	ft_init_mutex(t_data *info)
 	}
 	if (pthread_mutex_init(&info->mutex_print, NULL))
 		return (0);
+	if (pthread_mutex_init(&info->mutex_all_eat, NULL))
+		return (0);
 	return (1);
 }
 
@@ -114,45 +116,49 @@ void	my_sleep(t_data *info, int ms)
 	while (get_time() - t < ms)
 		usleep(100);
 }
+
 void	ft_print(char c, t_philo *ph)
 {
-	// pthread_mutex_lock(&ph->info->mutex_print);
+	pthread_mutex_lock(&ph->info->mutex_print);
 	// int long long	cur = (get_time() - ph->info->time);
 	if (c == 'f')
 	{
-		printf("[%lld] Philosopher %d has taken a fork\n", get_time() - ph->info->time, ph->philo_id + 1);
+		printf("%s[%lld] Philosopher %d has taken a fork\n", BYELLOW, get_time() - ph->info->time, ph->philo_id + 1);
+		printf("%s[%lld] Philosopher %d has taken a fork\n", BYELLOW, get_time() - ph->info->time, ph->philo_id + 1);
 		// return ;
 	}
 	else if (c == 'e')
 	{
-		printf("[%lld] Philosopher %d is eating\n",  get_time() - ph->info->time, ph->philo_id + 1);
+		printf("%s[%lld] Philosopher %d is eating\n", CYAN, get_time() - ph->info->time, ph->philo_id + 1);
 		// ph->info->time += ph->info->te;
 		//my_sleep(ph->info, ph->info->te);
 		// return ;
 	}
 	else if (c == 's')
 	{
-		printf("[%lld] Philosopher %d is sleeping\n", get_time() - ph->info->time, ph->philo_id + 1);
+		printf("%s[%lld] Philosopher %d is sleeping\n", BLUE, get_time() - ph->info->time, ph->philo_id + 1);
 		// ph->info->time += ph->info->ts;
-		//my_sleep(ph->info, ph->info->ts);
+		// my_sleep(ph->info, ph->info->ts);
 		// return ;
 	}
 	else if (c == 't')
 	{
-		printf("[%lld] Philosopher %d is sleeping\n", get_time() - ph->info->time ,ph->philo_id + 1);
+		printf("%s[%lld] Philosopher %d is thinking\n", PURPLE, get_time() - ph->info->time ,ph->philo_id + 1);
 		// return ;
 	}
-	// pthread_mutex_unlock(&ph->info->mutex_print);
+	pthread_mutex_unlock(&ph->info->mutex_print);
 }
 
 void	eating(t_philo *philo)
 {
+	pthread_mutex_lock(&philo->info->mutex_all_eat);
 	ft_print('f', philo);
 	// if (philo->times_ate > philo->info->n_eat)
 	// 	return ;
 	// pthread_mutex_lock(&philo->info->mutex_print);
 	ft_print('e', philo);
 	my_sleep(philo->info, philo->info->te);
+	pthread_mutex_unlock(&philo->info->mutex_all_eat);
 	//pthread_mutex_lock(&philo->info->mutex_all_eat);
 	//philo->times_ate++;
 	// if (philo->times_ate == philo->info->n_eat)
@@ -160,77 +166,119 @@ void	eating(t_philo *philo)
 	//pthread_mutex_unlock(&philo->info->mutex_all_eat);
 }
 
-// void	check_forks_odd(t_philo *ph)
-// {
-// 	if (pthread_mutex_lock(&ph->info->mutex_forks[ph->left_fork]))
-// 		return ;
-// 	printf("odd- Philo id is %d\n", ph->philo_id + 1);
-// 	if (ph->info->forks[ph->left_fork] == ph->philo_id + 1)
-// 	{
-// 		pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
-// 		return ;
-// 	}
-// 	pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]);
-// 	// printf("oddjfofh- Philo id is %d\n", ph->philo_id + 1);
-// 	// printf("4 - Philo id is %d\n", ph->philo_id);
-// 	if (ph->info->forks[ph->right_fork] == ph->philo_id)
-// 	{
-// 		pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
-// 		return ;
-// 	}
-// 	ph->info->forks[ph->right_fork] = ph->philo_id;
-// 	ph->info->forks[ph->left_fork] = ph->philo_id;
-// 	eating(ph);
-
-// 	// if (ph->info->forks[ph->left_fork] != ph->philo_id && ph->info->forks[ph->right_fork] != ph->philo_id)
-// 	// {
-// 	// 	ph->info->forks[ph->left_fork] = ph->philo_id;
-// 	// 	ph->info->forks[ph->right_fork] = ph->philo_id;
-// 	// 	eating(ph);
-// 	// }
-// 	// pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
-// 	// pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
-// }
-
-void	check_forks_even(t_philo *ph)
+void	drop_forks_even(t_philo *ph)
 {
-	// printf("even- Philo id is %d\n", ph->philo_id + 1);
 	if (pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]))
 		return ;
-	if (ph->info->forks[ph->right_fork] == ph->philo_id || ph->info->forks[ph->right_fork])
+	if (ph->info->forks[ph->right_fork] != ph->philo_id)
 	{
 		pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
 		return ;
 	}
 	else
 	{
-		ph->info->forks[ph->right_fork] = ph->philo_id;
 		pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
 		pthread_mutex_lock(&ph->info->mutex_forks[ph->left_fork]);
-		// printf("2 - Philo id is %d\n", ph->philo_id);
-		if (ph->info->forks[ph->left_fork] == ph->philo_id)
+		if (ph->info->forks[ph->left_fork] != ph->philo_id)
 		{
 			pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
 			return ;
 		}
-		ph->info->forks[ph->left_fork] = ph->philo_id;
+		ph->info->forks[ph->right_fork] = -1;
+		ph->info->forks[ph->left_fork] = -1;
 		pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
 	}
-	eating(ph);
 }
+
+void	go_sleep(t_philo *ph)
+{
+	ft_print('s', ph);
+	my_sleep(ph->info, ph->info->ts);
+
+}
+
+int	check_forks_even(t_philo *ph)
+{
+	if (pthread_mutex_lock(&ph->info->mutex_forks[ph->left_fork]))
+		return (0);
+	// printf("even- Philo id is %d\n", ph->philo_id + 1);
+	if (ph->info->forks[ph->left_fork] == ph->philo_id)
+	{
+		pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+		return (0);
+	}
+	else
+	{
+		pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+		pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]);
+		// printf("2 - Philo id is %d:\tleft:%d\tright:%d\n",ph->philo_id, ph->info->forks[ph->left_fork], ph->info->forks[ph->right_fork]);
+		if (ph->info->forks[ph->right_fork] == ph->philo_id)
+		{
+			// printf("----------- \n");
+			pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
+			return (0);
+		}
+		ph->info->forks[ph->right_fork] = ph->philo_id;
+		ph->info->forks[ph->left_fork] = ph->philo_id;
+		// printf("test shiiiiiiiiii\n");
+		pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
+		// drop_forks_even(ph);
+	}
+	return (1);
+}
+
+// void	test_forks(t_philo *ph)
+// {
+// 	pthread_mutex_lock(&ph->info->mutex_forks[ph->left_fork]);
+// 	pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]);
+// 	if (!ph->info->forks[ph->left_fork] && !ph->info->forks[ph->right_fork])
+// 	{
+// 		ph->info->forks[ph->left_fork] = 1;
+// 		ph->info->forks[ph->right_fork] = 1;
+// 		eating(ph);
+// 		// pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+// 		// pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
+// 		// return ;
+// 	}
+// 	pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
+// 	pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+// }
+
+// void	test_forks(t_philo *ph)
+// {
+// 	pthread_mutex_lock(&ph->info->mutex_forks[ph->left_fork]);
+// 	pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]);
+// 	if (!ph->info->forks[ph->left_fork] && !ph->info->forks[ph->right_fork])
+// 	{
+// 		ph->info->forks[ph->left_fork] = 1;
+// 		ph->info->forks[ph->right_fork] = 1;
+// 		eating(ph);
+// 		// pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+// 		// pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
+// 		// return ;
+// 	}
+// 	pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
+// 	pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+// }
+
+
 void	*ft_thread(void *info)
 {
 	// int time = 0;
 	t_philo *ph = (t_philo *)info;
 	// (void) data;
-	// if (ph->philo_id % 2)
-	// 	usleep(15000);
+	// if (ph->philo_id % 2) 5000);
 	while (1)
 	{
-	
-		check_forks_even(ph);
-
-		//drop_forks;
+		if (check_forks_even(ph))
+		{
+			eating(ph);
+			go_sleep(ph);
+			ft_print('t', ph);
+		}    
+		// printf("AY IT DID START\n");
+		// eating(ph);
+		// go_sleep(ph);
 		//usleep500;
 		//printf("ph: %d meals: %d\n", ph->philo_id, ph->times_ate);
 		// if (ph->info->all_eat == ph->info->n_philo)
@@ -248,7 +296,7 @@ void	 ft_init_philo(t_data *info)
 	{
 		info->philo[i].info = info;
 		info->philo[i].times_ate = 0;
-		info->philo[i].philo_id = i;
+		// info->philo[i].philo_id = i;
 		i++;
 	}
 	i = 0;
@@ -257,6 +305,7 @@ void	 ft_init_philo(t_data *info)
 	{
 		pthread_create(&info->phils[i], NULL, &ft_thread, &info->philo[i]);
 		i++;
+		// usleep(100);
 	}
 	i = 0;
 	while (i < info->n_philo)

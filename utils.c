@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/10 11:55:19 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/13 14:58:18 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/14 03:28:09 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,12 +95,15 @@ int long long	get_time()
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-void	my_sleep(t_data *info, int ms)
+void	my_sleep(t_philo *ph, int ms)
 {
 	long long	t;
 
-	(void) info;
 	t = get_time();
-	while (get_time() - t < ms)
+	while (get_time() - t < ms && !ph->death_flag)
+	{
 		usleep(100);
+		if (((long long)(get_time - ph->last_meal)) >= ph->info->td)
+			ph->death_flag = 1;
+	}
 }

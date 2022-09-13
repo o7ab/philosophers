@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:26:25 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/13 10:28:50 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/14 03:19:39 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,15 @@
 # define BYELLOW  "\033[1;33m"
 
 typedef struct s_philo{
-	int death_flag;
-	int philo_id;
-	int last_meal;
-	int	left_fork;
-	int	right_fork;
-	unsigned int times_ate;
-	pthread_mutex_t left_mutex;
-	pthread_mutex_t right_mutex;
-	struct s_data *info;
+	int				death_flag;
+	int				philo_id;
+	int long long	last_meal;
+	int				left_fork;
+	int				right_fork;
+	unsigned int	times_ate;
+	pthread_mutex_t	left_mutex;
+	pthread_mutex_t	right_mutex;
+	struct s_data	*info;
 }	t_philo;
 
 typedef struct s_data{
@@ -62,7 +62,10 @@ int				check_forks_even(t_philo *ph);
 void			eating(t_philo *philo);
 int				check_arg(char **argv, t_data *data);
 int				ft_init_mutex(t_data *info);
-void			my_sleep(t_data *info, int ms);
+void			my_sleep(t_philo *ph, int ms);
 int long long	get_time();
 void			drop_forks_even(t_philo *ph);
+void			ft_print(char c, t_philo *ph);
+void			go_sleep(t_philo *ph);
+
 #endif

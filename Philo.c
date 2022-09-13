@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:25:53 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/13 14:17:46 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/13 15:01:31 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,16 +121,6 @@ void	*ft_thread(void *info)
 	// printf("lf: %d, rf: %d\n", ph->left_fork, ph->right_fork);
 	while (1)
 	{
-		// if (!(ph->philo_id + 1% 2))
-		// {
-		// 	if (test_forks_even(ph))
-		// 	{
-		// 		eating(ph);
-		// 		drop_forks_even(ph);
-		// 		go_sleep(ph);
-		// 		ft_print('t', ph);
-		// 	}
-		// }
 		if (check_forks_even(ph))
 		{
 			eating(ph);
@@ -138,7 +128,7 @@ void	*ft_thread(void *info)
 			go_sleep(ph);
 			ft_print('t', ph);
 		}    
-		// usleep(100);
+		usleep(100);
 		// printf("AY IT DID START\n");
 		//printf("ph: %d meals: %d\n", ph->philo_id, ph->times_ate);
 		// if (ph->info->all_eat == ph->info->n_philo)

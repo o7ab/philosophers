@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:25:53 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/10 13:09:36 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/13 14:17:46 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	ft_print(char c, t_philo *ph)
 	{
 		printf("%s[%lld] Philosopher %d is eating\n", CYAN, get_time() - ph->info->time, ph->philo_id + 1);
 		// ph->info->time += ph->info->te;
-		//my_sleep(ph->info, ph->info->te);
+		// my_sleep(ph->info, ph->info->te);
 		// return ;
 	}
 	else if (c == 's')
@@ -38,7 +38,7 @@ void	ft_print(char c, t_philo *ph)
 	}
 	else if (c == 't')
 	{
-		printf("%s[%lld] Philosopher %d is thinking\n", PURPLE, get_time() - ph->info->time ,ph->philo_id + 1);
+		printf("%s[%lld] Philosopher %d is thinking\n", PURPLE, get_time() - ph->info->time, ph->philo_id + 1);
 		// return ;
 	}
 	pthread_mutex_unlock(&ph->info->mutex_print);
@@ -46,7 +46,8 @@ void	ft_print(char c, t_philo *ph)
 
 void	eating(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->info->mutex_all_eat);
+	// printf("philo id is %d\n", philo->philo_id);
+	// pthread_mutex_lock(&philo->info->mutex_all_eat);
 	ft_print('f', philo);
 	// if (philo->times_ate > philo->info->n_eat)
 	// 	return ;
@@ -58,7 +59,7 @@ void	eating(t_philo *philo)
 	//philo->times_ate++;
 	// if (philo->times_ate == philo->info->n_eat)
 	// 	philo->info->all_eat++;
-	pthread_mutex_unlock(&philo->info->mutex_all_eat);
+	// pthread_mutex_unlock(&philo->info->mutex_all_eat);
 }
 
 void	go_sleep(t_philo *ph)
@@ -68,41 +69,77 @@ void	go_sleep(t_philo *ph)
 
 }
 
-// void	test_forks(t_philo *ph)
-// {
-// 	pthread_mutex_lock(&ph->info->mutex_forks[ph->left_fork]);
-// 	pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]);
-// 	if (!ph->info->forks[ph->left_fork] && !ph->info->forks[ph->right_fork])
-// 	{
-// 		ph->info->forks[ph->left_fork] = 1;
-// 		ph->info->forks[ph->right_fork] = 1;
-// 		eating(ph);
-// 		// pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
-// 		// pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
-// 		// return ;
-// 	}
-// 	pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
-// 	pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
-// }
+int	test_forks(t_philo *ph)
+{
+	pthread_mutex_lock(&ph->info->mutex_forks[ph->left_fork]);
+	pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]);
+	// if (ph->philo_id % 2) 
+	// 	usleep(5000);
+	if (ph->info->forks[ph->left_fork] == 0 && ph->info->forks[ph->right_fork] == 0)
+	{
+		ph->info->forks[ph->left_fork] = 1;
+		ph->info->forks[ph->right_fork] = 1;
+		// eating(ph);
+		// printf("  testing philo id %d left %d right %d\n", ph->philo_id, ph->info->forks[ph->left_fork], ph->info->forks[ph->right_fork]);
+		pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
+		pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+		return (1);
+	}
+	pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
+	pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+	return (0);
+}
+
+int	test_forks_even(t_philo *ph)
+{
+	pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]);
+	pthread_mutex_lock(&ph->info->mutex_forks[ph->left_fork]);
+	// if (ph->philo_id % 2) 
+	// 	usleep(5000);
+	if (ph->info->forks[ph->left_fork] == 0 && ph->info->forks[ph->right_fork] == 0)
+	{
+		ph->info->forks[ph->right_fork] = 1;
+		ph->info->forks[ph->left_fork] = 1;
+		// eating(ph);
+		// printf("  testing philo id %d left %d right %d\n", ph->philo_id, ph->info->forks[ph->left_fork], ph->info->forks[ph->right_fork]);
+		pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+		pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
+		return (1);
+	}
+	pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+	pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
+	return (0);
+}
 
 void	*ft_thread(void *info)
 {
 	// int time = 0;
 	t_philo *ph = (t_philo *)info;
 	// (void) data;
-	// if (ph->philo_id % 2) 5000);
+	// if (ph->philo_id % 2) 
+	// 	usleep(50);
+	// printf("lf: %d, rf: %d\n", ph->left_fork, ph->right_fork);
 	while (1)
 	{
+		// if (!(ph->philo_id + 1% 2))
+		// {
+		// 	if (test_forks_even(ph))
+		// 	{
+		// 		eating(ph);
+		// 		drop_forks_even(ph);
+		// 		go_sleep(ph);
+		// 		ft_print('t', ph);
+		// 	}
+		// }
 		if (check_forks_even(ph))
 		{
-		
+			eating(ph);
+			drop_forks_even(ph);
 			go_sleep(ph);
 			ft_print('t', ph);
 		}    
+		// usleep(100);
 		// printf("AY IT DID START\n");
-		// eating(ph);
-		// go_sleep(ph);
-		//usleep500;
 		//printf("ph: %d meals: %d\n", ph->philo_id, ph->times_ate);
 		// if (ph->info->all_eat == ph->info->n_philo)
 		// 	break;

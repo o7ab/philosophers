@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/10 11:51:31 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/13 14:18:44 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/19 21:06:49 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,46 +56,37 @@ void	set_fork(t_data *info)
 // 		pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
 // 	}
 // }
-void	drop_forks_even(t_philo *ph)
+void	drop_forks(t_philo *ph)
 {
 	pthread_mutex_lock(&ph->info->mutex_forks[ph->left_fork]);
 	pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]);
-	// printf("philo id %d left %d right %d\n", ph->philo_id, ph->info->forks[ph->left_fork], ph->info->forks[ph->right_fork]);
-	if (ph->info->forks[ph->right_fork] > 0 && ph->info->forks[ph->left_fork] > 0)
-	{
+	// if (ph->info->forks[ph->right_fork] > 0 && ph->info->forks[ph->left_fork] > 0)
+	// {
 		ph->info->forks[ph->right_fork] = 0;
 		ph->info->forks[ph->left_fork] = 0;
-	}
+	// }
 	pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
 	pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
 }
 
-int	check_forks_even(t_philo *ph)
+int	check_forks(t_philo *ph)
 {
 	pthread_mutex_lock(&ph->info->mutex_forks[ph->left_fork]);
 	if (ph->info->forks[ph->left_fork])
 	{
-		// printf("even- Philo id is %d\n", ph->philo_id + 1);
 		pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
 		return (0);
 	}
-	else
+	pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]);
+	if (ph->info->forks[ph->right_fork])
 	{
 		pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
-		pthread_mutex_lock(&ph->info->mutex_forks[ph->right_fork]);
-		if (ph->info->forks[ph->right_fork])
-		{
-			// printf("----------- \n");
-			pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
-			return (0);
-		}
-		// printf("test shiiiiiiiiii\n");
-		ph->info->forks[ph->left_fork] = 1;
-		ph->info->forks[ph->right_fork] = 1;
-		// eating(ph);
 		pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
-		// printf("the philo_id is %d\t The left fork is %d\t the right fork is %d\n", ph->philo_id + 1, ph->info->forks[ph->left_fork], ph->info->forks[ph->right_fork]);
-		// drop_forks_even(ph);
+		return (0);
 	}
+	ph->info->forks[ph->left_fork] = 1;
+	ph->info->forks[ph->right_fork] = 1;
+	pthread_mutex_unlock(&ph->info->mutex_forks[ph->left_fork]);
+	pthread_mutex_unlock(&ph->info->mutex_forks[ph->right_fork]);
 	return (1);
 }

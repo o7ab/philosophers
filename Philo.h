@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:26:25 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/18 14:40:36 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/19 20:23:16 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,16 @@ typedef struct s_data{
 }   t_data;
 
 void			set_fork(t_data *info);
-int				check_forks_even(t_philo *ph);
+int				check_forks(t_philo *ph);
 void			eating(t_philo *philo);
 int				check_arg(char **argv, t_data *data);
 int				ft_init_mutex(t_data *info);
 void			my_sleep(t_philo *ph, int ms);
 int long long	get_time();
-void			drop_forks_even(t_philo *ph);
+void			drop_forks(t_philo *ph);
 void			ft_print(char c, t_philo *ph);
 void			go_sleep(t_philo *ph);
 int				death_check(t_philo *ph);
+void			print_death(t_philo *ph);
+
 #endif

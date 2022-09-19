@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/10 11:55:19 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/18 20:42:45 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/19 20:16:35 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ int check_arg(char **argv, t_data *data)
 		return (0);
 	data->dead = 0;
 	data->all_eat = 0;
+	// data_
 	return (1);
 }
 
@@ -101,23 +102,13 @@ void	my_sleep(t_philo *ph, int ms)
 {
 	long long	t;
 
-	// (void) ph;
+	(void) ph;
 	t = get_time();
 	// pthread_mutex_lock(&ph->info->mutex_dead);
-	while (get_time() - t < ms && !*ph->death_flag)
+	while (get_time() - t < ms)
 	{
-		if (get_time() - ph->last_meal >= ph->info->td)
-			break ;
-		usleep(100);
+		// if (get_time() - ph->last_meal >= ph->info->td)
+		// 	break ;
+		usleep(ms);
 	}
-	// death_check(ph);
-	// if (get_time() - ph->last_meal >= ph->info->td)
-	// {
-	// 	ft_print('d', ph);
-	// 	*ph->death_flag = 1;
-	// }
-	// pthread_mutex_unlock(&ph->info->mutex_dead);
-	// if (ph->death_flag)
-	// {
-	// }
 }

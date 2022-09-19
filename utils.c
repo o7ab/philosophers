@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/10 11:55:19 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/14 03:28:09 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/18 20:42:45 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,8 @@ int	ft_init_mutex(t_data *info)
 		return (0);
 	if (pthread_mutex_init(&info->mutex_all_eat, NULL))
 		return (0);
+	if (pthread_mutex_init(&info->mutex_dead, NULL))
+		return (0);
 	return (1);
 }
 
@@ -99,11 +101,23 @@ void	my_sleep(t_philo *ph, int ms)
 {
 	long long	t;
 
+	// (void) ph;
 	t = get_time();
-	while (get_time() - t < ms && !ph->death_flag)
+	// pthread_mutex_lock(&ph->info->mutex_dead);
+	while (get_time() - t < ms && !*ph->death_flag)
 	{
+		if (get_time() - ph->last_meal >= ph->info->td)
+			break ;
 		usleep(100);
-		if (((long long)(get_time - ph->last_meal)) >= ph->info->td)
-			ph->death_flag = 1;
 	}
+	// death_check(ph);
+	// if (get_time() - ph->last_meal >= ph->info->td)
+	// {
+	// 	ft_print('d', ph);
+	// 	*ph->death_flag = 1;
+	// }
+	// pthread_mutex_unlock(&ph->info->mutex_dead);
+	// if (ph->death_flag)
+	// {
+	// }
 }

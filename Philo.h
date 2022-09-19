@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:26:25 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/14 03:19:39 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/18 14:40:36 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,10 @@
 # define PURPLE "\e[1;95m"
 # define BLUE "\033[1;34m"
 # define BYELLOW  "\033[1;33m"
+# define WHITE "\e[1;97m"
 
 typedef struct s_philo{
-	int				death_flag;
+	int				*death_flag;
 	int				philo_id;
 	int long long	last_meal;
 	int				left_fork;
@@ -47,7 +48,7 @@ typedef struct s_data{
     unsigned int	n_eat;
 	int	long long	time;
 	unsigned int	all_eat;
-	unsigned int	dead;
+	int				*dead;
 	int				forks[250];
 	pthread_t		phils[200];
 	pthread_mutex_t mutex_forks[200];
@@ -67,5 +68,5 @@ int long long	get_time();
 void			drop_forks_even(t_philo *ph);
 void			ft_print(char c, t_philo *ph);
 void			go_sleep(t_philo *ph);
-
+int				death_check(t_philo *ph);
 #endif

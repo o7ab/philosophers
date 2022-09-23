@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/10 11:55:19 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/19 20:16:35 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/21 23:22:44 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,9 @@ int	ft_atoi(const char *str)
 	return (sign * num);
 }
 
-int check_arg(char **argv, t_data *data)
+int	check_arg(char **argv, t_data *data)
 {
-	int i;
+	int	i;
 
 	i = 1;
 	while (argv[i])
@@ -52,7 +52,6 @@ int check_arg(char **argv, t_data *data)
 			return (0);
 		i++;
 	}
-	i = 0;
 	data->n_philo = ft_atoi(argv[1]);
 	data->td = ft_atoi(argv[2]);
 	data->te = ft_atoi(argv[3]);
@@ -63,17 +62,17 @@ int check_arg(char **argv, t_data *data)
 		if (data->n_eat <= 0)
 			return (0);
 	}
-	if (data->n_philo <= 0 || data->td <= 60 || data->ts <= 60 || data->te <= 60)
+	else if (!argv[5])
+		data->n_eat = 99999999;
+	if (data->n_philo <= 0 || data->td <= 60 || data->ts <= 60
+		|| data->te <= 60 || data->n_philo > 200)
 		return (0);
-	data->dead = 0;
-	data->all_eat = 0;
-	// data_
 	return (1);
 }
 
 int	ft_init_mutex(t_data *info)
 {
-	unsigned int i;
+	unsigned int	i;
 
 	i = 0;
 	while (i < info->n_philo)
@@ -83,17 +82,17 @@ int	ft_init_mutex(t_data *info)
 	}
 	if (pthread_mutex_init(&info->mutex_print, NULL))
 		return (0);
-	if (pthread_mutex_init(&info->mutex_all_eat, NULL))
-		return (0);
 	if (pthread_mutex_init(&info->mutex_dead, NULL))
+		return (0);
+	if (pthread_mutex_init(&info->mutex_eat, NULL))
 		return (0);
 	return (1);
 }
 
-int long long	get_time()
+int long long	get_time(void)
 {
-	struct timeval time;
-	
+	struct timeval	time;
+
 	gettimeofday(&time, NULL);
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
@@ -104,11 +103,8 @@ void	my_sleep(t_philo *ph, int ms)
 
 	(void) ph;
 	t = get_time();
-	// pthread_mutex_lock(&ph->info->mutex_dead);
 	while (get_time() - t < ms)
 	{
-		// if (get_time() - ph->last_meal >= ph->info->td)
-		// 	break ;
 		usleep(ms);
 	}
 }

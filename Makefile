@@ -6,11 +6,11 @@
 #    By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/15 15:42:26 by oabushar          #+#    #+#              #
-#    Updated: 2022/09/14 03:12:37 by oabushar         ###   ########.fr        #
+#    Updated: 2022/09/21 19:51:20 by oabushar         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS = philo.c forks.c utils.c utils2.c
+SRCS = philo.c forks.c utils.c utils2.c ft_init.c
 
 OBJS = $(SRCS:.c=.o)
 

@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:26:25 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/21 23:22:28 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/24 04:14:04 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ typedef struct s_data{
 	pthread_mutex_t	mutex_print;
 	pthread_mutex_t	mutex_dead;
 	pthread_mutex_t	mutex_eat;
+	pthread_mutex_t	var;
+	pthread_mutex_t	var_2;
 }	t_data;
 
 void			set_fork(t_data *info);
@@ -74,4 +76,6 @@ void			ft_init_philo(t_data *info);
 void			*ft_thread(void *info);
 int				death_monitor(t_data *info);
 void			destroy_mutex(t_data *info);
+void			thread_help(t_philo *ph);
+
 #endif

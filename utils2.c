@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 02:16:30 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/23 02:31:20 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/24 04:16:23 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,25 @@ void	print_death(t_philo *ph)
 	pthread_mutex_unlock(&ph->info->mutex_print);
 }
 
+int	quick_check(t_philo *ph)
+{
+	pthread_mutex_lock(&ph->info->mutex_dead);
+	if (*ph->death_flag)
+	{
+		pthread_mutex_unlock(&ph->info->mutex_dead);
+		return (0);
+	}
+	pthread_mutex_unlock(&ph->info->mutex_dead);
+	return (1);
+}
+
 void	ft_print(char c, t_philo *ph)
 {
 	int long long	cur;
 
 	cur = (get_time() - ph->info->time);
-	if (*ph->death_flag)
-	{
+	if (!quick_check(ph))
 		return ;
-	}
 	pthread_mutex_lock(&ph->info->mutex_print);
 	if (c == 'f')
 	{

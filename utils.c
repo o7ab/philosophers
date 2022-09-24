@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/10 11:55:19 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/21 23:22:44 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/24 04:05:51 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,10 @@ int	ft_init_mutex(t_data *info)
 	if (pthread_mutex_init(&info->mutex_dead, NULL))
 		return (0);
 	if (pthread_mutex_init(&info->mutex_eat, NULL))
+		return (0);
+	if (pthread_mutex_init(&info->var, NULL))
+		return (0);
+	if (pthread_mutex_init(&info->var_2, NULL))
 		return (0);
 	return (1);
 }

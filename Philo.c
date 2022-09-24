@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:25:53 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/23 02:39:39 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/24 04:19:33 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 
 void	eating(t_philo *philo)
 {
-	philo->last_meal = get_time();
 	ft_print('f', philo);
 	ft_print('e', philo);
+	pthread_mutex_lock(&philo->info->mutex_eat);
+	philo->last_meal = get_time();
+	pthread_mutex_unlock(&philo->info->mutex_eat);
 	my_sleep(philo, philo->info->te);
 	philo->times_ate++;
 	pthread_mutex_lock(&philo->info->mutex_eat);
@@ -27,12 +29,22 @@ void	eating(t_philo *philo)
 
 int	death_check(t_philo *ph)
 {
-	pthread_mutex_lock(&ph->info->mutex_dead); 
-	if (get_time() - ph->last_meal >= ph->info->td)
+	long long	temp;
+
+	temp = 0;
+	pthread_mutex_lock(&ph->info->var);
+	pthread_mutex_lock(&ph->info->mutex_eat);
+	temp = get_time() - ph->last_meal;
+	pthread_mutex_unlock(&ph->info->mutex_eat);
+	pthread_mutex_unlock(&ph->info->var);
+	pthread_mutex_lock(&ph->info->mutex_dead);
+	if (temp >= ph->info->td)
 	{
-		print_death(ph);
-		*ph->death_flag = 1;
 		pthread_mutex_unlock(&ph->info->mutex_dead);
+		print_death(ph);
+		pthread_mutex_lock(&ph->info->var_2);
+		*ph->death_flag = 1;
+		pthread_mutex_unlock(&ph->info->var_2);
 		return (0);
 	}
 	pthread_mutex_unlock(&ph->info->mutex_dead);
@@ -42,12 +54,14 @@ int	death_check(t_philo *ph)
 void	*ft_thread(void *info)
 {
 	t_philo	*ph;
+	int		temp;
 
 	ph = (t_philo *)info;
-	ph->last_meal = get_time();
-	if (ph->philo_id % 2)
-		usleep(100);
-	while (!*ph->death_flag && ph->times_ate < ph->info->n_eat)
+	thread_help(ph);
+	pthread_mutex_lock(&ph->info->var_2);
+	temp = *ph->death_flag;
+	pthread_mutex_unlock(&ph->info->var_2);
+	while (!temp && ph->times_ate < ph->info->n_eat)
 	{
 		while (!check_forks(ph))
 			usleep(50);
@@ -56,6 +70,9 @@ void	*ft_thread(void *info)
 		go_sleep(ph);
 		ft_print('t', ph);
 		usleep(500);
+		pthread_mutex_lock(&ph->info->var_2);
+		temp = *ph->death_flag;
+		pthread_mutex_unlock(&ph->info->var_2);
 	}
 	return (NULL);
 }
@@ -65,8 +82,10 @@ int	death_monitor(t_data *info)
 	unsigned int	i;
 
 	i = 0;
+	pthread_mutex_lock(&info->mutex_eat);
 	while (!*info->dead && !info->all_eat)
 	{
+		pthread_mutex_unlock(&info->mutex_eat);
 		i = 0;
 		while (i < info->n_philo)
 		{
@@ -75,7 +94,9 @@ int	death_monitor(t_data *info)
 			i++;
 		}
 		usleep(100);
+		pthread_mutex_lock(&info->mutex_eat);
 	}
+	pthread_mutex_unlock(&info->mutex_eat);
 	return (1);
 }
 

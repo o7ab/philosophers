@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 15:26:25 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/24 04:14:04 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/26 10:19:55 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ typedef struct s_philo{
 	int				left_fork;
 	int				right_fork;
 	unsigned int	times_ate;
-	pthread_mutex_t	left_mutex;
-	pthread_mutex_t	right_mutex;
 	struct s_data	*info;
 }	t_philo;
 

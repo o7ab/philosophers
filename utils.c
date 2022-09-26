@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/10 11:55:19 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/24 04:05:51 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/26 15:19:17 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,6 @@ int	ft_init_mutex(t_data *info)
 		return (0);
 	if (pthread_mutex_init(&info->mutex_eat, NULL))
 		return (0);
-	if (pthread_mutex_init(&info->var, NULL))
-		return (0);
 	if (pthread_mutex_init(&info->var_2, NULL))
 		return (0);
 	return (1);
@@ -105,10 +103,11 @@ void	my_sleep(t_philo *ph, int ms)
 {
 	long long	t;
 
-	(void) ph;
 	t = get_time();
 	while (get_time() - t < ms)
 	{
+		if (get_time() - ph->last_meal >= ph->info->td)
+			break ;
 		usleep(ms);
 	}
 }

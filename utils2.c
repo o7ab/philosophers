@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 02:16:30 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/24 04:16:23 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/25 19:14:47 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ void	go_sleep(t_philo *ph)
 
 void	one_down(t_philo *ph)
 {
-	usleep(ph->info->td * 100);
+	my_sleep(ph, ph->info->td);
 	printf("%s[%u] Philosopher %d has died\n",
-		WHITE, ph->info->td, ph->philo_id + 1);
+		WHITE, ph->info->td, 1);
 }
 
 void	print_death(t_philo *ph)

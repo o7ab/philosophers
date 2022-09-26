@@ -1,4 +1,5 @@
 .vscode
 *.dSYM
 *.exe
-Philo
+philo
+.DS_Store

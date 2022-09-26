@@ -6,7 +6,7 @@
 /*   By: oabushar <oabushar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/21 19:49:05 by oabushar          #+#    #+#             */
-/*   Updated: 2022/09/24 04:10:29 by oabushar         ###   ########.fr       */
+/*   Updated: 2022/09/26 15:12:39 by oabushar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,10 @@ void	destroy_mutex(t_data *info)
 	}
 	pthread_mutex_destroy(&info->mutex_print);
 	pthread_mutex_destroy(&info->mutex_dead);
+	pthread_mutex_destroy(&info->mutex_eat);
+	pthread_mutex_destroy(&info->var);
+	pthread_mutex_destroy(&info->var_2);
+	free (info);
 }
 
 void	ft_init_philo(t_data *info)
@@ -62,14 +66,19 @@ void	ft_init_philo(t_data *info)
 		info->philo[i].times_ate = 0;
 		i++;
 	}
+	if (info->n_philo == 1)
+	{
+		one_down(&info->philo[0]);
+		return ;
+	}
 	start_philo(info);
 }
 
 void	thread_help(t_philo *ph)
 {
-	pthread_mutex_lock(&ph->info->var);
+	pthread_mutex_lock(&ph->info->mutex_eat);
 	ph->last_meal = get_time();
-	pthread_mutex_unlock(&ph->info->var);
+	pthread_mutex_unlock(&ph->info->mutex_eat);
 	if (ph->philo_id % 2)
 		usleep(100);
 }
